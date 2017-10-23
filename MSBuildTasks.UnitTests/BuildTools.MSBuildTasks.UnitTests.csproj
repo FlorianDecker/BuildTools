@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JiraVersionMovePositionerTest.cs" />
     <Compile Include="Jira\JiraProjectVersionServiceTest.cs" />
     <Compile Include="Jira\SemanticVersioning\SemVerUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

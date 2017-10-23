@@ -49,7 +49,7 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations
     {
       var response = _client.Execute<T> (request);
       if (response.StatusCode != successCode)
-        throw new JiraException (string.Format ("Error calling REST service, HTTP resonse is: {0}\nReturned content: {1}", response.StatusCode, response.Content)) { HttpStatusCode = response.StatusCode };
+        throw new JiraException (string.Format ("Error calling REST service, HTTP response is: {0}\nReturned content: {1}", response.StatusCode, response.Content)) { HttpStatusCode = response.StatusCode };
 
       return response;
     }

@@ -14,7 +14,6 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 // 
-
 using System;
 using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations;
 
@@ -51,5 +50,19 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeInterfaces
     /// </summary>
     /// <exception cref="JiraException">Thrown if version does not exist.</exception>
     void DeleteVersion (string projectKey, string versionName);
+
+    /// <summary>
+    /// Moves Version to be placed after another given Version
+    /// </summary>
+    /// <param name="versionId"></param>
+    /// <param name="afterVersionUrl"></param>
+    void MoveVersion(string versionId, string afterVersionUrl);
+
+    /// <summary>
+    /// Moves Version to a given position ('First', 'Last', 'Earlier' or 'Later')
+    /// </summary>
+    /// <param name="versionId"></param>
+    /// <param name="position"></param>
+    void MoveVersionByPosition (string versionId, string position);
   }
 }

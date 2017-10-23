@@ -15,10 +15,13 @@
 // under the License.
 // 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Build.Framework;
+using Remotion.BuildTools.MSBuildTasks.Jira.SemanticVersioning;
 using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations;
 using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeInterfaces;
+using Remotion.BuildTools.MSBuildTasks.Jira.Utility;
 
 namespace Remotion.BuildTools.MSBuildTasks.Jira
 {
@@ -35,13 +38,15 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira
 
     public override bool Execute ()
     {
+      SemanticVersionParser semVerParser = new SemanticVersionParser();
+
       try
       {
         JiraRestClient restClient = new JiraRestClient (JiraUrl, Authenticator);
         IJiraProjectVersionService service = new JiraProjectVersionService (restClient);
         IJiraProjectVersionFinder finder = new JiraProjectVersionFinder(restClient);
 
-        var versions = finder.FindVersions (JiraProjectKey, "(?s).*");
+        var versions = finder.FindVersions (JiraProjectKey, "(?s).*").ToList();
         var jiraProject = versions.Where(x => x.name == VersionNumber).DefaultIfEmpty().First();
         
         if (jiraProject != null)
@@ -57,6 +62,23 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira
         }
 
         CreatedVersionID = service.CreateVersion (JiraProjectKey, VersionNumber, null);
+
+        var createdVersion = semVerParser.ParseVersion (VersionNumber);
+        var jiraVersionMovePositioner = new JiraVersionMovePositioner (versions, createdVersion);
+        
+        if (jiraVersionMovePositioner.HasToBeMoved())
+        {
+          var versionBeforeCreatedVersion = jiraVersionMovePositioner.GetVersionBeforeCreatedVersion();
+          if (versionBeforeCreatedVersion == null)
+          {
+              service.MoveVersionByPosition (CreatedVersionID, "First"); 
+          }
+          else if (versionBeforeCreatedVersion.SemanticVersion == null || !versionBeforeCreatedVersion.SemanticVersion.Equals (createdVersion))
+          {
+            service.MoveVersion (CreatedVersionID, versionBeforeCreatedVersion.JiraProjectVersion.self); 
+          }
+        }
+
         return true;
       }
       catch (Exception ex)
