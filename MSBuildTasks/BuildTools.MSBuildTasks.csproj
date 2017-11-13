@@ -66,11 +66,13 @@
     <Compile Include="Jira\JiraTask.cs" />
     <Compile Include="Jira\ServiceFacadeImplementations\IJiraRestApi.cs" />
     <Compile Include="Jira\ServiceFacadeImplementations\JiraProjectVersionSemVerAdapter.cs" />
+    <Compile Include="Jira\Utility\IJiraVersionMovePositioner.cs" />
     <Compile Include="Jira\Utility\JiraProjectVersionUtility.cs" />
     <Compile Include="Jira\ServiceFacadeInterfaces\IJiraProjectVersionFinder.cs" />
     <Compile Include="Jira\ServiceFacadeImplementations\JiraIssueService.cs" />
     <Compile Include="Jira\ServiceFacadeImplementations\JiraProjectVersionFinder.cs" />
     <Compile Include="Jira\ServiceFacadeImplementations\JiraRestClient.cs" />
+    <Compile Include="Jira\Utility\JiraSortVersion.cs" />
     <Compile Include="Jira\Utility\JiraVersionMovePositioner.cs" />
     <Compile Include="NuGetPush.cs" />
     <Compile Include="NDocProjectBuilder.cs" />

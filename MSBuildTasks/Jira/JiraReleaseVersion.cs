@@ -15,9 +15,12 @@
 // under the License.
 // 
 using System;
+using System.Linq;
 using Microsoft.Build.Framework;
+using Remotion.BuildTools.MSBuildTasks.Jira.SemanticVersioning;
 using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations;
 using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeInterfaces;
+using Remotion.BuildTools.MSBuildTasks.Jira.Utility;
 
 namespace Remotion.BuildTools.MSBuildTasks.Jira
 {
@@ -29,13 +32,42 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira
     [Required]
     public string NextVersionID { get; set; }
 
+    private bool _sortReleasedVersion = false;
+
+    public bool SortReleasedVersion
+    {
+      get { return _sortReleasedVersion; }
+      set { _sortReleasedVersion = value; }
+    }
+
     public override bool Execute ()
     {
       try
       {
         JiraRestClient restClient = new JiraRestClient (JiraUrl, Authenticator);
         IJiraProjectVersionService service = new JiraProjectVersionService (restClient);
+
         service.ReleaseVersion (VersionID, NextVersionID);
+
+        if (SortReleasedVersion)
+        {
+          var semVerParser = new SemanticVersionParser();
+          var finder = new JiraProjectVersionFinder(restClient);
+
+          var toBeSortedJiraProjectVersion = service.GetVersionById (VersionID);
+          var versions = finder.FindVersions (toBeSortedJiraProjectVersion.project, "(?s).*").ToList();
+          var releasedVersions = versions.Where (x => x.released == true).ToList();
+
+          var jiraVersionMovePositioner = new JiraVersionMovePositioner (releasedVersions, toBeSortedJiraProjectVersion);
+          var jiraSortVersion = new JiraSortVersion (service, jiraVersionMovePositioner);
+
+          jiraSortVersion.SortVersion (
+              new JiraProjectVersionSemVerAdapter()
+              {
+                JiraProjectVersion = toBeSortedJiraProjectVersion,
+                SemanticVersion = semVerParser.ParseVersion (toBeSortedJiraProjectVersion.name)
+              });
+        }
 
         return true;
       }

@@ -22,19 +22,20 @@ using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations;
 
 namespace Remotion.BuildTools.MSBuildTasks.Jira.Utility
 {
-  public class JiraVersionMovePositioner
+  public class JiraVersionMovePositioner : IJiraVersionMovePositioner
   {
     private readonly List<JiraProjectVersion> _jiraProjectVersions;
     private readonly IOrderedEnumerable<JiraProjectVersionSemVerAdapter> _orderedVersions;
-    private readonly SemanticVersion _createdVersion;
-    private List<JiraProjectVersionSemVerAdapter> _toBeOrdered;
+    private readonly SemanticVersion _createdVersionAsSemanticVersion;
+    private readonly List<JiraProjectVersionSemVerAdapter> _toBeOrdered;
 
-    public JiraVersionMovePositioner (List<JiraProjectVersion> jiraProjectVersions, SemanticVersion createdVersion)
+    public JiraVersionMovePositioner (List<JiraProjectVersion> jiraProjectVersions, JiraProjectVersion createdVersion)
     {
-      _createdVersion = createdVersion;
       _jiraProjectVersions = jiraProjectVersions;
 
       var semVerParser = new SemanticVersionParser();
+      _createdVersionAsSemanticVersion = semVerParser.ParseVersion (createdVersion.name);
+
       _toBeOrdered = _jiraProjectVersions.Select (
         x => new JiraProjectVersionSemVerAdapter()
              {
@@ -42,18 +43,14 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.Utility
                SemanticVersion = semVerParser.ParseVersionOrNull (x.name)
              }).ToList();
 
-      _toBeOrdered.Add (new JiraProjectVersionSemVerAdapter() { SemanticVersion = _createdVersion });
+      _toBeOrdered.Add (
+          new JiraProjectVersionSemVerAdapter()
+          {
+            JiraProjectVersion = createdVersion,
+            SemanticVersion = _createdVersionAsSemanticVersion
+          });
+
       _orderedVersions = _toBeOrdered.OrderBy (x => x.SemanticVersion);
-    }
-
-    public JiraProjectVersionSemVerAdapter GetVersionBeforeCreatedVersion ()
-    {
-      return _orderedVersions.TakeWhile (x => !Equals (x.SemanticVersion, _createdVersion)).LastOrDefault();
-    }
-
-    private JiraProjectVersionSemVerAdapter PrivateGetVersionBeforeCreatedVersion ()
-    {
-      return _toBeOrdered.TakeWhile (x => !Equals (x.SemanticVersion, _createdVersion)).LastOrDefault();
     }
 
     public bool HasToBeMoved ()
@@ -65,6 +62,16 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.Utility
         return false;
 
       return true;
+    }
+
+    public JiraProjectVersionSemVerAdapter GetVersionBeforeCreatedVersion ()
+    {
+      return _orderedVersions.TakeWhile (x => !Equals (x.SemanticVersion, _createdVersionAsSemanticVersion)).LastOrDefault();
+    }
+
+    private JiraProjectVersionSemVerAdapter PrivateGetVersionBeforeCreatedVersion ()
+    {
+      return _toBeOrdered.TakeWhile (x => !Equals (x.SemanticVersion, _createdVersionAsSemanticVersion)).LastOrDefault();
     }
   }
 }

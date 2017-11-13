@@ -93,6 +93,15 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations
       jiraClient.DoRequest (request, HttpStatusCode.OK);
     }
 
+    public JiraProjectVersion GetVersionById (string versionId)
+    {
+      var resource = "version/" + versionId;
+      var request = jiraClient.CreateRestRequest (resource, Method.GET);
+
+      var response = jiraClient.DoRequest<JiraProjectVersion> (request, HttpStatusCode.OK);
+      return response.Data;
+    }
+
     private string IncrementVersion (string version, int componentToIncrement)
     {
       if(componentToIncrement < 1 || componentToIncrement > 4)

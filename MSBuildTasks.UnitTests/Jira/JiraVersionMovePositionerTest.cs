@@ -14,11 +14,11 @@ namespace BuildTools.MSBuildTasks.UnitTests
     public void JiraVersionMovePositioner_HasToBeMoved_OnEmptyList_ReturnsFalse ()
     {
       var jiraProjectVersions = new List<JiraProjectVersion>();
-      var createdVersion = new SemanticVersionParser().ParseVersion ("1.0.0");
+      var createdVersion = new JiraProjectVersion() { name = "1.0.0" };
 
-      var JiraVersionMovePositioner = new JiraVersionMovePositioner (jiraProjectVersions, createdVersion);
+      var jiraVersionMovePositioner = new JiraVersionMovePositioner (jiraProjectVersions, createdVersion);
 
-      Assert.That (JiraVersionMovePositioner.HasToBeMoved(), Is.False);
+      Assert.That (jiraVersionMovePositioner.HasToBeMoved(), Is.False);
     }
 
     [Test]
@@ -29,10 +29,10 @@ namespace BuildTools.MSBuildTasks.UnitTests
                                   new JiraProjectVersion { name = "1.0.1" }
                                 };
 
-      var createdVersion = new SemanticVersionParser().ParseVersion ("1.0.0");
+      var createdVersion = new JiraProjectVersion() { name = "1.0.0" };
 
-      var JiraVersionMovePositioner = new JiraVersionMovePositioner (jiraProjectVersions, createdVersion);
-      Assert.That (JiraVersionMovePositioner.HasToBeMoved(), Is.True);
+      var jiraVersionMovePositioner = new JiraVersionMovePositioner (jiraProjectVersions, createdVersion);
+      Assert.That (jiraVersionMovePositioner.HasToBeMoved(), Is.True);
     }
 
     [Test]
@@ -43,10 +43,10 @@ namespace BuildTools.MSBuildTasks.UnitTests
                                   new JiraProjectVersion { name = "1.0.0" }
                                 };
 
-      var createdVersion = new SemanticVersionParser().ParseVersion ("1.0.1");
+      var createdVersion = new JiraProjectVersion() { name = "1.0.1" };
 
-      var JiraVersionMovePositioner = new JiraVersionMovePositioner (jiraProjectVersions, createdVersion);
-      Assert.That (JiraVersionMovePositioner.HasToBeMoved(), Is.False);
+      var jiraVersionMovePositioner = new JiraVersionMovePositioner (jiraProjectVersions, createdVersion);
+      Assert.That (jiraVersionMovePositioner.HasToBeMoved(), Is.False);
     }
 
     [Test]
@@ -58,7 +58,7 @@ namespace BuildTools.MSBuildTasks.UnitTests
                                   new JiraProjectVersion { name = "2.2.0" }
                                 };
 
-      var createdVersion = new SemanticVersionParser().ParseVersion ("2.2.0-alpha.5");
+      var createdVersion = new JiraProjectVersion() { name = "2.2.0-alpha.5" };
 
       var jiraVersionMovePositioner = new JiraVersionMovePositioner(jiraProjectVersions, createdVersion);
       Assert.That (jiraVersionMovePositioner.HasToBeMoved(), Is.True);
@@ -73,7 +73,7 @@ namespace BuildTools.MSBuildTasks.UnitTests
                                   new JiraProjectVersion { name = "2.1.3" }
                                 };
 
-      var createdVersion = new SemanticVersionParser().ParseVersion ("2.2.0");
+      var createdVersion = new JiraProjectVersion() { name = "2.2.0" };
 
       var jiraVersionMovePositioner = new JiraVersionMovePositioner(jiraProjectVersions, createdVersion);
       Assert.That (jiraVersionMovePositioner.HasToBeMoved(), Is.False);
@@ -88,7 +88,7 @@ namespace BuildTools.MSBuildTasks.UnitTests
                                   new JiraProjectVersion { name = "2.1.3" }
                                 };
 
-      var createdVersion = new SemanticVersionParser().ParseVersion ("2.1.0");
+      var createdVersion = new JiraProjectVersion() { name = "2.1.0" };
 
       var jiraVersionMovePositioner = new JiraVersionMovePositioner(jiraProjectVersions, createdVersion);
       Assert.That (jiraVersionMovePositioner.HasToBeMoved(), Is.True);
@@ -103,7 +103,7 @@ namespace BuildTools.MSBuildTasks.UnitTests
                                   new JiraProjectVersion { name = "1.9.3" }
                                 };
 
-      var createdVersion = new SemanticVersionParser().ParseVersion ("2.0.2");
+      var createdVersion = new JiraProjectVersion() { name = "2.0.2" };
 
       var jiraVersionMovePositioner = new JiraVersionMovePositioner(jiraProjectVersions, createdVersion);
       Assert.That (jiraVersionMovePositioner.HasToBeMoved(), Is.True);
@@ -118,12 +118,12 @@ namespace BuildTools.MSBuildTasks.UnitTests
                                   new JiraProjectVersion { name = "2.2.0" }
                                 };
 
-      var createdVersion = new SemanticVersionParser().ParseVersion ("2.2.0-alpha.5");
+      var createdVersion = new JiraProjectVersion() { name = "2.2.0-alpha.5" };
 
       var jiraVersionMovePositioner = new JiraVersionMovePositioner(jiraProjectVersions, createdVersion);
-      var versionCreatedBefore = jiraVersionMovePositioner.GetVersionBeforeCreatedVersion();
+      var versionBeforeCreated = jiraVersionMovePositioner.GetVersionBeforeCreatedVersion();
 
-      Assert.That (versionCreatedBefore.SemanticVersion.ToString(), Is.EqualTo ("2.1.3"));
+      Assert.That (versionBeforeCreated.SemanticVersion.ToString(), Is.EqualTo ("2.1.3"));
     }
 
     [Test]
@@ -135,7 +135,7 @@ namespace BuildTools.MSBuildTasks.UnitTests
                                   new JiraProjectVersion { name = "1.8.3" }
                                 };
 
-      var createdVersion = new SemanticVersionParser().ParseVersion ("1.8.2");
+      var createdVersion = new JiraProjectVersion() { name = "1.8.2" };
 
       var jiraVersionMovePositioner = new JiraVersionMovePositioner(jiraProjectVersions, createdVersion);
       var versionCreatedBefore = jiraVersionMovePositioner.GetVersionBeforeCreatedVersion();
@@ -151,7 +151,7 @@ namespace BuildTools.MSBuildTasks.UnitTests
                                   new JiraProjectVersion { name = "1.0.1" }
                                 };
 
-      var createdVersion = new SemanticVersionParser().ParseVersion ("1.0.0");
+      var createdVersion = new JiraProjectVersion() { name = "1.0.0" };
 
       var jiraVersionMovePositioner = new JiraVersionMovePositioner(jiraProjectVersions, createdVersion);
       var versionCreatedBefore = jiraVersionMovePositioner.GetVersionBeforeCreatedVersion();
