@@ -69,5 +69,11 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeInterfaces
     /// Returns a specific version by id
     /// </summary>
     JiraProjectVersion GetVersionById (string versionId);
+
+    /// <summary>
+    /// Sorts a specific version.
+    /// </summary>
+    /// <param name="versionID"></param>
+    void SortVersion (string versionID);
   }
 }

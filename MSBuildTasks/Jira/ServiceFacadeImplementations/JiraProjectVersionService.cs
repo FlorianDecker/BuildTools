@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using Remotion.BuildTools.MSBuildTasks.Jira.SemanticVersioning;
 using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeInterfaces;
 using Remotion.BuildTools.MSBuildTasks.Jira.Utility;
@@ -75,32 +76,6 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations
       return newVersionId;
     }
 
-    public void MoveVersion(string versionId, string afterVersionUrl)
-    {
-      var request = jiraClient.CreateRestRequest ("version/" + versionId + "/move", Method.POST);
-
-      request.AddBody (new { after = afterVersionUrl });
-
-      jiraClient.DoRequest (request, HttpStatusCode.OK);
-    }
-
-    public void MoveVersionByPosition (string versionId, string position)
-    {
-      var request = jiraClient.CreateRestRequest ("version/" + versionId + "/move", Method.POST);
-
-      request.AddBody (new { position = position });
-
-      jiraClient.DoRequest (request, HttpStatusCode.OK);
-    }
-
-    public JiraProjectVersion GetVersionById (string versionId)
-    {
-      var resource = "version/" + versionId;
-      var request = jiraClient.CreateRestRequest (resource, Method.GET);
-
-      var response = jiraClient.DoRequest<JiraProjectVersion> (request, HttpStatusCode.OK);
-      return response.Data;
-    }
 
     private string IncrementVersion (string version, int componentToIncrement)
     {
@@ -210,6 +185,86 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations
       var difference = releaseDate - releaseDateAsUtcTime;
       var adjustedReleaseDate = releaseDate + difference;
       return adjustedReleaseDate;
+    }
+
+    public void MoveVersion(string versionId, string afterVersionUrl)
+    {
+      var request = jiraClient.CreateRestRequest ("version/" + versionId + "/move", Method.POST);
+
+      request.AddBody (new { after = afterVersionUrl });
+
+      jiraClient.DoRequest (request, HttpStatusCode.OK);
+    }
+
+    public void MoveVersionByPosition (string versionId, string position)
+    {
+      var request = jiraClient.CreateRestRequest ("version/" + versionId + "/move", Method.POST);
+
+      request.AddBody (new { position = position });
+
+      jiraClient.DoRequest (request, HttpStatusCode.OK);
+    }
+
+    public JiraProjectVersion GetVersionById (string versionId)
+    {
+      var resource = "version/" + versionId;
+      var request = jiraClient.CreateRestRequest (resource, Method.GET);
+
+      var response = jiraClient.DoRequest<JiraProjectVersion> (request, HttpStatusCode.OK);
+      return response.Data;
+    }
+
+    public void SortVersion (string versionID)
+    {
+      var jiraProjectVersion = GetVersionById (versionID);
+
+      var versions = jiraProjectVersionFinder.FindVersions (jiraProjectVersion.project, "(?s).*").Where (x => x.released == jiraProjectVersion.released).ToList();
+
+      Version parsedVersion;
+      Version.TryParse (jiraProjectVersion.name, out parsedVersion);
+
+      // .Net Version
+      if (parsedVersion != null)
+      {
+        var parsedVersions = versions.Select (ToJiraProjectVersionComparableAdapterAsVersion).ToList();
+        var jiraProjectVersionAsVersion =
+            new JiraProjectVersionComparableAdapter<Version>() { JiraProjectVersion = jiraProjectVersion, ComparableVersion = parsedVersion };
+
+        var jiraMovePositioner = new JiraVersionMovePositioner<Version> (parsedVersions, jiraProjectVersionAsVersion);
+        var jiraSortVersion = new JiraSortVersion<Version> (this, jiraMovePositioner);
+        jiraSortVersion.SortVersion();
+      }
+      else //Check if it is a Semantic Version
+      {
+        var semanticVersionParser = new SemanticVersionParser();
+        var semanticVersion = semanticVersionParser.ParseVersionOrNull (jiraProjectVersion.name);
+
+        //SemanticVersion
+        if (semanticVersion != null)
+        {
+          var parsedVersions = versions.Select (
+              x => new JiraProjectVersionComparableAdapter<SemanticVersion>()
+                   {
+                     JiraProjectVersion = x,
+                     ComparableVersion = semanticVersionParser.ParseVersionOrNull (x.name)
+                   }).ToList();
+
+          var jiraProjectVersionAsVersion =
+              new JiraProjectVersionComparableAdapter<SemanticVersion>() { JiraProjectVersion = jiraProjectVersion, ComparableVersion = semanticVersion };
+
+          var jiraMovePositioner = new JiraVersionMovePositioner<SemanticVersion> (parsedVersions, jiraProjectVersionAsVersion);
+          var jiraSortVersion = new JiraSortVersion<SemanticVersion> (this, jiraMovePositioner);
+          jiraSortVersion.SortVersion();
+        }
+      }
+    }
+
+    private JiraProjectVersionComparableAdapter<Version> ToJiraProjectVersionComparableAdapterAsVersion (JiraProjectVersion jiraProjectVersion)
+    {
+      Version parsedVersion;
+      Version.TryParse (jiraProjectVersion.name, out parsedVersion);
+
+      return new JiraProjectVersionComparableAdapter<Version>() { JiraProjectVersion = jiraProjectVersion, ComparableVersion = parsedVersion };
     }
   }
 }

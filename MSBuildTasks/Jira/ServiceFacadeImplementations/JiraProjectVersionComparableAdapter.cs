@@ -14,15 +14,13 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 // 
-using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations;
 using System;
 
-namespace Remotion.BuildTools.MSBuildTasks.Jira.Utility
+namespace Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations
 {
-  public interface IJiraVersionMovePositioner<T> where T : IComparable<T>
+  public class JiraProjectVersionComparableAdapter<T> where T : IComparable<T>
   {
-    JiraProjectVersionComparableAdapter<T> GetCreatedVersion ();
-    bool HasToBeMoved ();
-    JiraProjectVersionComparableAdapter<T> GetVersionBeforeCreatedVersion ();
+    public JiraProjectVersion JiraProjectVersion { get; set; }
+    public T ComparableVersion { get; set; }
   }
 }

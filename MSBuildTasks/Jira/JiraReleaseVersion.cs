@@ -51,22 +51,7 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira
 
         if (SortReleasedVersion)
         {
-          var semVerParser = new SemanticVersionParser();
-          var finder = new JiraProjectVersionFinder(restClient);
-
-          var toBeSortedJiraProjectVersion = service.GetVersionById (VersionID);
-          var versions = finder.FindVersions (toBeSortedJiraProjectVersion.project, "(?s).*").ToList();
-          var releasedVersions = versions.Where (x => x.released == true).ToList();
-
-          var jiraVersionMovePositioner = new JiraVersionMovePositioner (releasedVersions, toBeSortedJiraProjectVersion);
-          var jiraSortVersion = new JiraSortVersion (service, jiraVersionMovePositioner);
-
-          jiraSortVersion.SortVersion (
-              new JiraProjectVersionSemVerAdapter()
-              {
-                JiraProjectVersion = toBeSortedJiraProjectVersion,
-                SemanticVersion = semVerParser.ParseVersion (toBeSortedJiraProjectVersion.name)
-              });
+          service.SortVersion (VersionID);
         }
 
         return true;

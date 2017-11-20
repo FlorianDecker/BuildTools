@@ -14,25 +14,25 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 // 
-using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations;
 using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeInterfaces;
 using System;
 
 namespace Remotion.BuildTools.MSBuildTasks.Jira.Utility
 {
-  public class JiraSortVersion
+  public class JiraSortVersion <T> where T : IComparable<T>
   {
     private readonly IJiraProjectVersionService _jiraService;
-    private readonly IJiraVersionMovePositioner _jiraVersionMovePositioner;
+    private readonly IJiraVersionMovePositioner<T> _jiraVersionMovePositioner;
 
-    public JiraSortVersion (IJiraProjectVersionService jiraService, IJiraVersionMovePositioner jiraVersionMovePositioner)
+    public JiraSortVersion (IJiraProjectVersionService jiraService, IJiraVersionMovePositioner<T> jiraVersionMovePositioner)
     {
       _jiraService = jiraService;
       _jiraVersionMovePositioner = jiraVersionMovePositioner;
     }
 
-    public void SortVersion (JiraProjectVersionSemVerAdapter createdVersion)
+    public void SortVersion ()
     {
+      var createdVersion = _jiraVersionMovePositioner.GetCreatedVersion();
       if (_jiraVersionMovePositioner.HasToBeMoved ())
       {
         var versionBeforeCreatedVersion = _jiraVersionMovePositioner.GetVersionBeforeCreatedVersion ();
@@ -40,7 +40,7 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.Utility
         {
           _jiraService.MoveVersionByPosition (createdVersion.JiraProjectVersion.id, "First");
         }
-        else if (versionBeforeCreatedVersion.SemanticVersion == null || !versionBeforeCreatedVersion.SemanticVersion.Equals (createdVersion.SemanticVersion))
+        else if (versionBeforeCreatedVersion.ComparableVersion == null || !versionBeforeCreatedVersion.ComparableVersion.Equals (createdVersion.ComparableVersion))
         {
           _jiraService.MoveVersion (createdVersion.JiraProjectVersion.id, versionBeforeCreatedVersion.JiraProjectVersion.self);
         }

@@ -65,6 +65,7 @@
     <Compile Include="Jira\JiraReleaseVersionAndSquashUnreleased.cs" />
     <Compile Include="Jira\JiraTask.cs" />
     <Compile Include="Jira\ServiceFacadeImplementations\IJiraRestApi.cs" />
+    <Compile Include="Jira\ServiceFacadeImplementations\JiraProjectVersionComparableAdapter.cs" />
     <Compile Include="Jira\ServiceFacadeImplementations\JiraProjectVersionSemVerAdapter.cs" />
     <Compile Include="Jira\Utility\IJiraVersionMovePositioner.cs" />
     <Compile Include="Jira\Utility\JiraProjectVersionUtility.cs" />

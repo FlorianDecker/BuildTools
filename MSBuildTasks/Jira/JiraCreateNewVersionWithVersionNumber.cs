@@ -62,17 +62,8 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira
         }
 
         CreatedVersionID = service.CreateVersion (JiraProjectKey, VersionNumber, null);
-        var createdVersion = service.GetVersionById (CreatedVersionID);
-        var unreleasedVersions = versions.Where (x => x.released == false).DefaultIfEmpty().ToList();
-        var jiraVersionMovePositioner = new JiraVersionMovePositioner (unreleasedVersions, createdVersion);
-        var jiraSortVersion = new JiraSortVersion (service, jiraVersionMovePositioner);
 
-        jiraSortVersion.SortVersion (
-            new JiraProjectVersionSemVerAdapter()
-            {
-              JiraProjectVersion = createdVersion,
-              SemanticVersion = semVerParser.ParseVersion (createdVersion.name)
-            });
+        service.SortVersion (CreatedVersionID);
 
         return true;
       }
