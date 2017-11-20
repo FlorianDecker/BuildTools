@@ -218,7 +218,7 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations
     {
       var jiraProjectVersion = GetVersionById (versionID);
 
-      var versions = jiraProjectVersionFinder.FindVersions (jiraProjectVersion.project, "(?s).*").Where (x => x.released == jiraProjectVersion.released).ToList();
+      var versions = jiraProjectVersionFinder.FindVersions (jiraProjectVersion.projectId, "(?s).*").ToList().Where (x => x.released == jiraProjectVersion.released).ToList();
 
       Version parsedVersion;
       Version.TryParse (jiraProjectVersion.name, out parsedVersion);

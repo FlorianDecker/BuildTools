@@ -215,6 +215,56 @@ namespace BuildTools.MSBuildTasks.UnitTests.Jira
       DeleteVersionsIfExistent (c_jiraProjectKey, "6.0.1-alpha.1", "6.0.1-alpha.2", "6.0.1-beta.1", "6.0.1-beta.2");
     }
 
+    [Test]
+    public void TestSortingSemanticVersion ()
+    {
+      const string firstVersion = "1.16.32.0";
+      const string secondVersion = "1.16.32.1";
+      const string thirdVersion = "1.16.32.2";
+
+      DeleteVersionsIfExistent (c_jiraProjectKey, firstVersion, secondVersion, thirdVersion);
+
+      _service.CreateVersion (c_jiraProjectKey, firstVersion, null);
+      _service.CreateVersion (c_jiraProjectKey, thirdVersion, null);
+      var toBeSortedVersionId = _service.CreateVersion (c_jiraProjectKey, secondVersion, null);
+      _service.SortVersion (toBeSortedVersionId);
+
+      var versions = _versionFinder.FindVersions (c_jiraProjectKey, "(?s).*").ToList();
+
+      var positionFirstVersion = versions.IndexOf (versions.Single (x => x.name == firstVersion));
+      var positionSecondVersion = versions.IndexOf (versions.Single (x => x.name == secondVersion));
+      var positionThirdVersion = versions.IndexOf (versions.Single (x => x.name == thirdVersion));
+
+
+      Assert.That (positionFirstVersion < positionSecondVersion, Is.True);
+      Assert.That (positionSecondVersion < positionThirdVersion, Is.True);
+    }
+
+    [Test]
+    public void TestSortingNetVersion ()
+    {
+      const string firstVersion = "2.1.3";
+      const string secondVersion = "2.2.0-alpha.5";
+      const string thirdVersion = "2.2.0";
+
+      DeleteVersionsIfExistent (c_jiraProjectKey, firstVersion, secondVersion, thirdVersion);
+
+      _service.CreateVersion (c_jiraProjectKey, firstVersion, null);
+      _service.CreateVersion (c_jiraProjectKey, thirdVersion, null);
+      var toBeSortedVersionId = _service.CreateVersion (c_jiraProjectKey, secondVersion, null);
+      _service.SortVersion (toBeSortedVersionId);
+
+      var versions = _versionFinder.FindVersions (c_jiraProjectKey, "(?s).*").ToList();
+
+      var positionFirstVersion = versions.IndexOf (versions.Single (x => x.name == firstVersion));
+      var positionSecondVersion = versions.IndexOf (versions.Single (x => x.name == secondVersion));
+      var positionThirdVersion = versions.IndexOf (versions.Single (x => x.name == thirdVersion));
+
+
+      Assert.That (positionFirstVersion < positionSecondVersion, Is.True);
+      Assert.That (positionSecondVersion < positionThirdVersion, Is.True);
+    }
+
     private void DeleteVersionsIfExistent (string projectName, params string[] versionNames)
     {
       foreach (var versionName in versionNames)

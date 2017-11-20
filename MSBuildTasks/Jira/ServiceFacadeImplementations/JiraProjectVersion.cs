@@ -14,7 +14,6 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 // 
-
 using System;
 
 namespace Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations
@@ -30,5 +29,6 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations
     public DateTime? releaseDate { get; set; }
     public bool? overdue { get; set; }
     public string project { get; set; }
+    public string projectId { get; set; }
   }
 }
