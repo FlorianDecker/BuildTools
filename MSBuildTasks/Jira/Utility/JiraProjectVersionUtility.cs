@@ -16,7 +16,6 @@
 // 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Remotion.BuildTools.MSBuildTasks.Jira.SemanticVersioning;
 using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations;
 
@@ -24,24 +23,26 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.Utility
 {
   public class JiraProjectVersionUtility
   {
-    public List<JiraProjectVersionSemVerAdapter> JiraProjectVersionsToJiraProjectVersionSemVerAdapters(
-      SemanticVersionParser semVerParser, IEnumerable<JiraProjectVersion> jiraProjectVersions)
+    public List<JiraProjectVersionSemVerAdapter> JiraProjectVersionsToJiraProjectVersionSemVerAdapters (
+        SemanticVersionParser semVerParser,
+        IEnumerable<JiraProjectVersion> jiraProjectVersions)
     {
       var versionList = new List<JiraProjectVersionSemVerAdapter>();
-      
+
       foreach (var version in jiraProjectVersions)
       {
         try
         {
-          versionList.Add(new JiraProjectVersionSemVerAdapter()
-          {
-            JiraProjectVersion = version,
-            SemanticVersion = semVerParser.ParseVersion(version.name)
-          });
+          versionList.Add (
+              new JiraProjectVersionSemVerAdapter()
+              {
+                JiraProjectVersion = version,
+                SemanticVersion = semVerParser.ParseVersion (version.name)
+              });
         }
         catch (ArgumentException)
         {
-          //Empty Catch. Invalid versions are not interesting for us
+          //Empty Catch. Invalid versions are not relevant for us
         }
       }
 

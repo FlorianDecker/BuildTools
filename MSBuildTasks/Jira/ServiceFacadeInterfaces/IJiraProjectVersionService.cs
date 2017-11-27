@@ -73,7 +73,7 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeInterfaces
     /// <summary>
     /// Sorts a specific version.
     /// </summary>
-    /// <param name="versionID"></param>
-    void SortVersion (string versionID);
+    /// <param name="versionId"></param>
+    void SortVersion (string versionId);
   }
 }
