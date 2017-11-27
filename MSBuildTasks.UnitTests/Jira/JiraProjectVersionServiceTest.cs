@@ -265,6 +265,35 @@ namespace BuildTools.MSBuildTasks.UnitTests.Jira
       Assert.That (positionSecondVersion < positionThirdVersion, Is.True);
     }
 
+    [Test]
+    public void TestSortingWithInvalidVersions ()
+    {
+      const string firstVersion = "1.17.21.0";
+      const string secondVersion = "NotValidVersion";
+      const string thirdVersion = "1.16.31.0";
+      const string betweenFirstAndSecondVersion = "1.17.22.0";
+
+      DeleteVersionsIfExistent (c_jiraProjectKey, firstVersion, secondVersion, thirdVersion, betweenFirstAndSecondVersion);
+
+      _service.CreateVersion (c_jiraProjectKey, firstVersion, null);
+      _service.CreateVersion (c_jiraProjectKey, secondVersion, null);
+      _service.CreateVersion (c_jiraProjectKey, thirdVersion, null);
+      var toBeSortedVersionId = _service.CreateVersion (c_jiraProjectKey, betweenFirstAndSecondVersion, null);
+      _service.SortVersion (toBeSortedVersionId);
+
+      var versions = _versionFinder.FindVersions (c_jiraProjectKey, "(?s).*").ToList();
+
+      var positionFirstVersion = versions.IndexOf (versions.Single (x => x.name == firstVersion));
+      var positionbetweenFirstAndSecondVersion = versions.IndexOf (versions.Single (x => x.name == betweenFirstAndSecondVersion));
+      var positionSecondVersion = versions.IndexOf (versions.Single (x => x.name == secondVersion));
+      var positionThirdVersion = versions.IndexOf (versions.Single (x => x.name == thirdVersion));
+
+
+      Assert.That (positionFirstVersion < positionbetweenFirstAndSecondVersion, Is.True);
+      Assert.That (positionbetweenFirstAndSecondVersion < positionSecondVersion, Is.True);
+      Assert.That (positionSecondVersion < positionThirdVersion, Is.True);
+    }
+
     private void DeleteVersionsIfExistent (string projectName, params string[] versionNames)
     {
       foreach (var versionName in versionNames)
