@@ -15,12 +15,9 @@
 // under the License.
 // 
 using System;
-using System.Linq;
 using Microsoft.Build.Framework;
-using Remotion.BuildTools.MSBuildTasks.Jira.SemanticVersioning;
 using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations;
 using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeInterfaces;
-using Remotion.BuildTools.MSBuildTasks.Jira.Utility;
 
 namespace Remotion.BuildTools.MSBuildTasks.Jira
 {
@@ -46,17 +43,19 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira
       {
         JiraRestClient restClient = new JiraRestClient (JiraUrl, Authenticator);
         IJiraProjectVersionService service = new JiraProjectVersionService (restClient);
+        var jiraProjectVersionFinder = new JiraProjectVersionFinder (restClient);
+        var jiraProjectVersionRepairer = new JiraProjectVersionRepairer (service, jiraProjectVersionFinder);
 
         service.ReleaseVersion (VersionID, NextVersionID);
 
         if (SortReleasedVersion)
         {
-          service.SortVersion (VersionID);
+          jiraProjectVersionRepairer.RepairVersionPosition (VersionID);
         }
 
         return true;
       }
-      catch(Exception ex)
+      catch (Exception ex)
       {
         Log.LogErrorFromException (ex);
         return false;

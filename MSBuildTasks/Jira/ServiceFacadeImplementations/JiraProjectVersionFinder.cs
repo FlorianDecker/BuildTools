@@ -14,7 +14,6 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 // 
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -50,6 +49,15 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations
       var request = jiraClient.CreateRestRequest (resource, Method.GET);
 
       var response = jiraClient.DoRequest<List<JiraProjectVersion>> (request, HttpStatusCode.OK);
+      return response.Data;
+    }
+
+    public JiraProjectVersion GetVersionById (string versionId)
+    {
+      var resource = "version/" + versionId;
+      var request = jiraClient.CreateRestRequest (resource, Method.GET);
+
+      var response = jiraClient.DoRequest<JiraProjectVersion> (request, HttpStatusCode.OK);
       return response.Data;
     }
   }

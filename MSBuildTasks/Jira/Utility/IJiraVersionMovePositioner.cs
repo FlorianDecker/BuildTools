@@ -23,6 +23,6 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.Utility
   {
     JiraProjectVersionComparableAdapter<T> GetCreatedVersion ();
     bool HasToBeMoved ();
-    JiraProjectVersionComparableAdapter<T> GetVersionBeforeCreatedVersion ();
+    JiraProjectVersionComparableAdapter<T> GetVersionBeforeCreatedVersionOrderedList ();
   }
 }

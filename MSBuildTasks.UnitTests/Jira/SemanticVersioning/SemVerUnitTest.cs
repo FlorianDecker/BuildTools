@@ -14,7 +14,7 @@ namespace BuildTools.MSBuildTasks.UnitTests.Jira.SemanticVersioning
         [SetUp]
         public void SetUp()
         {
-            _semanticVersionParser = new SemanticVersionParser();    
+            _semanticVersionParser = new SemanticVersionParser();
         }
 
         [Test]

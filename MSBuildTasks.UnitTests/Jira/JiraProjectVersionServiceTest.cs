@@ -216,7 +216,7 @@ namespace BuildTools.MSBuildTasks.UnitTests.Jira
     }
 
     [Test]
-    public void TestSortingSemanticVersion ()
+    public void TestSortingNetVersion ()
     {
       const string firstVersion = "1.16.32.0";
       const string secondVersion = "1.16.32.1";
@@ -226,8 +226,8 @@ namespace BuildTools.MSBuildTasks.UnitTests.Jira
 
       _service.CreateVersion (c_jiraProjectKey, firstVersion, null);
       _service.CreateVersion (c_jiraProjectKey, thirdVersion, null);
-      var toBeSortedVersionId = _service.CreateVersion (c_jiraProjectKey, secondVersion, null);
-      _service.SortVersion (toBeSortedVersionId);
+      var toBeRepairedVersionId = _service.CreateVersion (c_jiraProjectKey, secondVersion, null);
+      _repairer.RepairVersionPosition (toBeRepairedVersionId);
 
       var versions = _versionFinder.FindVersions (c_jiraProjectKey, "(?s).*").ToList();
 
@@ -241,7 +241,7 @@ namespace BuildTools.MSBuildTasks.UnitTests.Jira
     }
 
     [Test]
-    public void TestSortingNetVersion ()
+    public void TestSortingSemanticVersion ()
     {
       const string firstVersion = "2.1.3";
       const string secondVersion = "2.2.0-alpha.5";
@@ -251,8 +251,8 @@ namespace BuildTools.MSBuildTasks.UnitTests.Jira
 
       _service.CreateVersion (c_jiraProjectKey, firstVersion, null);
       _service.CreateVersion (c_jiraProjectKey, thirdVersion, null);
-      var toBeSortedVersionId = _service.CreateVersion (c_jiraProjectKey, secondVersion, null);
-      _service.SortVersion (toBeSortedVersionId);
+      var toBeRepairedVersionId = _service.CreateVersion (c_jiraProjectKey, secondVersion, null);
+      _repairer.RepairVersionPosition (toBeRepairedVersionId);
 
       var versions = _versionFinder.FindVersions (c_jiraProjectKey, "(?s).*").ToList();
 
@@ -278,8 +278,8 @@ namespace BuildTools.MSBuildTasks.UnitTests.Jira
       _service.CreateVersion (c_jiraProjectKey, firstVersion, null);
       _service.CreateVersion (c_jiraProjectKey, secondVersion, null);
       _service.CreateVersion (c_jiraProjectKey, thirdVersion, null);
-      var toBeSortedVersionId = _service.CreateVersion (c_jiraProjectKey, betweenFirstAndSecondVersion, null);
-      _service.SortVersion (toBeSortedVersionId);
+      var toBeRepairedVersionId = _service.CreateVersion (c_jiraProjectKey, betweenFirstAndSecondVersion, null);
+      _repairer.RepairVersionPosition (toBeRepairedVersionId);
 
       var versions = _versionFinder.FindVersions (c_jiraProjectKey, "(?s).*").ToList();
 

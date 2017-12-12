@@ -14,14 +14,19 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 // 
-
 using System.Collections.Generic;
 using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations;
 
 namespace Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeInterfaces
 {
-  interface IJiraProjectVersionFinder
+  public interface IJiraProjectVersionFinder
   {
+    /// <summary>
+    /// Returns all versions of the project.
+    /// </summary
+    /// <returns>List of project versions or empty sequence</returns>
+    IEnumerable<JiraProjectVersion> GetVersions (string projectKey);
+
     /// <summary>
     /// Returns all versions of the project.
     /// Filters by Regex.IsMatch(name, versionPattern) if versionPattern is not null.
@@ -35,5 +40,10 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeInterfaces
     /// </summary
     /// <returns>List of project versions or empty sequence</returns>
     IEnumerable<JiraProjectVersion> FindUnreleasedVersions (string projectKey, string versionPattern);
+
+    /// <summary>
+    /// Returns a specific version by id
+    /// </summary>
+    JiraProjectVersion GetVersionById (string versionId);
   }
 }

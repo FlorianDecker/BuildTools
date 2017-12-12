@@ -21,14 +21,14 @@ using Remotion.BuildTools.MSBuildTasks.Jira.ServiceFacadeImplementations;
 
 namespace Remotion.BuildTools.MSBuildTasks.Jira.Utility
 {
-  public class JiraVersionMovePositioner<T> : IJiraVersionMovePositioner<T> where T : IComparable<T>
+  public class JiraVersionPositionFinder<T> : IJiraVersionMovePositioner<T> where T : IComparable<T>
   {
     private readonly List<JiraProjectVersionComparableAdapter<T>> _jiraProjectVersions;
     private readonly IOrderedEnumerable<JiraProjectVersionComparableAdapter<T>> _orderedVersions;
     private readonly List<JiraProjectVersionComparableAdapter<T>> _toBeOrdered;
     private readonly JiraProjectVersionComparableAdapter<T> _createdVersion;
 
-    public JiraVersionMovePositioner (List<JiraProjectVersionComparableAdapter<T>> jiraProjectVersions, JiraProjectVersionComparableAdapter<T> createdVersion)
+    public JiraVersionPositionFinder (List<JiraProjectVersionComparableAdapter<T>> jiraProjectVersions, JiraProjectVersionComparableAdapter<T> createdVersion)
     {
       _jiraProjectVersions = jiraProjectVersions;
       _createdVersion = createdVersion;
@@ -49,18 +49,18 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.Utility
       if (_jiraProjectVersions.Count == 0)
         return false;
 
-      if (Equals (PrivateGetVersionBeforeCreatedVersion(), GetVersionBeforeCreatedVersion()))
+      if (Equals (GetVersionBeforeCreatedVersionOriginalList(), GetVersionBeforeCreatedVersionOrderedList()))
         return false;
 
       return true;
     }
 
-    public JiraProjectVersionComparableAdapter<T> GetVersionBeforeCreatedVersion ()
+    public JiraProjectVersionComparableAdapter<T> GetVersionBeforeCreatedVersionOrderedList ()
     {
       return _orderedVersions.TakeWhile (x => !Equals (x.ComparableVersion, _createdVersion.ComparableVersion)).LastOrDefault();
     }
 
-    private JiraProjectVersionComparableAdapter<T> PrivateGetVersionBeforeCreatedVersion ()
+    private JiraProjectVersionComparableAdapter<T> GetVersionBeforeCreatedVersionOriginalList ()
     {
       return _toBeOrdered.TakeWhile (x => !Equals (x.ComparableVersion, _createdVersion.ComparableVersion)).LastOrDefault();
     }

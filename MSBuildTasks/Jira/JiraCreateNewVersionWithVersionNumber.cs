@@ -38,13 +38,12 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira
 
     public override bool Execute ()
     {
-      SemanticVersionParser semVerParser = new SemanticVersionParser();
-
       try
       {
         JiraRestClient restClient = new JiraRestClient (JiraUrl, Authenticator);
         IJiraProjectVersionService service = new JiraProjectVersionService (restClient);
         IJiraProjectVersionFinder finder = new JiraProjectVersionFinder(restClient);
+        var _jiraProjectVersionRepairer = new JiraProjectVersionRepairer (service, finder);
 
         var versions = finder.FindVersions (JiraProjectKey, "(?s).*").ToList();
         var jiraProject = versions.Where(x => x.name == VersionNumber).DefaultIfEmpty().First();
@@ -63,7 +62,7 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira
 
         CreatedVersionID = service.CreateVersion (JiraProjectKey, VersionNumber, null);
 
-        service.SortVersion (CreatedVersionID);
+        _jiraProjectVersionRepairer.RepairVersionPosition (CreatedVersionID);
 
         return true;
       }

@@ -27,7 +27,7 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira.SemanticVersioning
         public SemanticVersion ParseVersion(string version)
         {
           if (!Regex.IsMatch(version, _versionPattern, RegexOptions.Multiline))
-                throw new ArgumentException("Version has an invalid format. Expected equivalent to '1.2.3' or '1.2.3-alpha.4'");
+                throw new ArgumentException ("Version has an invalid format. Expected equivalent to '1.2.3' or '1.2.3-alpha.4'");
 
           return ParseVersionInternal(version);
         }
