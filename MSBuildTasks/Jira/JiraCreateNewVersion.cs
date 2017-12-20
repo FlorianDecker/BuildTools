@@ -32,6 +32,8 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira
     [Required]
     public int VersionComponentToIncrement { get; set; }
 
+    public bool SortVersion { get; set; }
+
     private DayOfWeek _versionReleaseWeekday;
 
     [Required]
@@ -47,7 +49,13 @@ namespace Remotion.BuildTools.MSBuildTasks.Jira
       {
         JiraRestClient restClient = new JiraRestClient (JiraUrl, Authenticator);
         IJiraProjectVersionService service = new JiraProjectVersionService (restClient);
-        service.CreateSubsequentVersion (JiraProject, VersionPattern, VersionComponentToIncrement, _versionReleaseWeekday);
+        IJiraProjectVersionFinder finder = new JiraProjectVersionFinder(restClient);
+        var jiraProjectVersionRepairer = new JiraProjectVersionRepairer (service, finder);
+
+        var createdVersionId = service.CreateSubsequentVersion (JiraProject, VersionPattern, VersionComponentToIncrement, _versionReleaseWeekday);
+
+        if (SortVersion)
+          jiraProjectVersionRepairer.RepairVersionPosition (createdVersionId);
 
         return true;
       }
